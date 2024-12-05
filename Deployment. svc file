@@ -1,0 +1,36 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+name: swiggy
+spec:
+  replicas: 4
+  selector:
+    matchlabels:
+     app: swiggy
+template:
+ metadata:
+  labels:
+   app: swiggy
+spec:
+  containers:
+  - name: swiggy
+    image: kalyani/swiggyproject
+Ports:
+ - containerport: 80
+
+---
+apiversion: v1
+kind: service
+metadata:
+name: swiggy
+spec:
+ type:Loadbalancer
+ selector:
+ app: swiggy
+ports:
+- port: 80
+targetport: 80
+
+
+  
