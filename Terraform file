@@ -1,0 +1,74 @@
+provider "google" {
+  project = "my-project"  
+  region  = "us-central1"                    
+}
+
+resource "google_container_cluster" "Example-1" {
+  name               = "deployment-1"
+  location           = "us-central1"
+  initial_node_count = 2
+
+  node_config {
+    machine_type = "e2-medium"
+    
+  }
+
+  
+  autoscaling {
+    enabled         = true
+    min_node_count  = 2
+    max_node_count  = 5
+  }
+}
+
+resource "google_container_node_pool" "example-2" {
+  name               = "deployment-2"
+  cluster            = google_container_cluster.example.name
+  location           = "us-centrai1-a"
+
+  node_config {
+    machine_type = "e2-medium"
+    }
+
+  
+  autoscaling {
+    min_node_count = 2
+    max_node_count = 5
+  }
+}
+
+
+
+resource "kubernetes_deployment" "testcase" {
+  metadata {
+    name      = "deployment"
+    
+  }
+
+  spec {
+    replicas = 2
+
+    selector {
+      match_labels = {
+        app = "testcase"
+      }
+    }
+ template {
+      metadata {
+        labels = {
+          app = "testcase"
+        }
+      }
+
+      spec {
+        container {
+          image = "nginx:latest"
+          name  = "nginx"
+          ports {
+            container_port = 80
+          }
+        }
+      }
+    }
+  }
+}
